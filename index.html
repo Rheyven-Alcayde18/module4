@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usability Evaluation — ITEP 101 Module 4 Reviewer</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f0faf8;
+    --white: #ffffff;
+    --ink: #0a1a15;
+    --ink-mid: #1e3530;
+    --ink-light: #5a7a72;
+    --green: #0c6e55;
+    --green-light: #17a07a;
+    --green-pale: #e3f5f0;
+    --teal: #0891b2;
+    --teal-pale: #e0f4fa;
+    --orange: #d97706;
+    --orange-pale: #fff7ed;
+    --border: rgba(12,110,85,0.10);
+    --border-strong: rgba(12,110,85,0.22);
+    --shadow: 0 4px 32px rgba(12,110,85,0.10);
+    --shadow-sm: 0 2px 12px rgba(12,110,85,0.07);
+    --radius: 14px;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; font-weight: 400; min-height: 100vh; line-height: 1.7; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #042f24 0%, #0a5940 50%, #083d4f 100%);
+    color: #fff;
+    padding: 3.5rem 2rem 2.8rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 75% 15%, rgba(23,160,122,0.30) 0%, transparent 55%),
+      radial-gradient(ellipse at 15% 85%, rgba(8,145,178,0.20) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+  }
+  .hero-eyebrow { position:relative;z-index:1; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:#6ee7b7; margin-bottom:1rem; font-weight:500; }
+  .hero h1 { position:relative;z-index:1; font-family:'Sora',sans-serif; font-size:clamp(2rem,5.5vw,3.4rem); font-weight:700; line-height:1.15; margin-bottom:.5rem; }
+  .hero h1 span { color:#67e8f9; }
+  .hero-sub { position:relative;z-index:1; font-size:14px; color:rgba(255,255,255,0.5); margin-top:.5rem; }
+  .hero-meta { position:relative;z-index:1; margin-top:1.8rem; display:flex; justify-content:center; gap:1.5rem; flex-wrap:wrap; }
+  .hero-pill { background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.13); border-radius:20px; padding:5px 14px; font-size:12px; color:rgba(255,255,255,0.7); }
+  .hero-pill strong { color:#fff; font-weight:500; }
+
+  /* TABS */
+  .tab-bar { position:sticky; top:0; z-index:100; background:#042f24; border-bottom:1px solid rgba(255,255,255,0.07); display:flex; justify-content:center; }
+  .tab-btn { background:none; border:none; border-bottom:2.5px solid transparent; padding:14px 30px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; letter-spacing:.03em; color:rgba(255,255,255,0.38); cursor:pointer; transition:color .2s,border-color .2s; display:flex; align-items:center; gap:8px; }
+  .tab-btn svg { width:16px; height:16px; stroke:currentColor; fill:none; stroke-width:1.8; }
+  .tab-btn.active { color:#6ee7b7; border-bottom-color:#6ee7b7; }
+  .tab-btn:hover:not(.active) { color:rgba(255,255,255,0.72); }
+
+  .panel { display:none; }
+  .panel.active { display:block; }
+  .container { max-width:880px; margin:0 auto; padding:2.5rem 1.5rem 4rem; }
+
+  /* SECTION LABEL */
+  .section-label { font-size:10px; letter-spacing:.18em; text-transform:uppercase; font-weight:600; color:var(--green); margin:2.5rem 0 .9rem; display:flex; align-items:center; gap:8px; }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--border-strong); }
+  .section-label:first-child { margin-top:0; }
+
+  /* CARDS */
+  .rcard { background:var(--white); border:1px solid var(--border); border-radius:var(--radius); padding:1.3rem 1.5rem; margin-bottom:.85rem; box-shadow:var(--shadow-sm); }
+  .rcard h3 { font-family:'Sora',sans-serif; font-size:16px; font-weight:600; color:var(--ink); margin-bottom:.65rem; }
+  .rcard ul { padding-left:1.15rem; }
+  .rcard li, .rcard p { font-size:14px; color:var(--ink-mid); line-height:1.75; }
+  .rcard li { margin-bottom:.35rem; }
+  .rcard li strong { color:var(--ink); font-weight:500; }
+
+  /* EVAL TYPE CARDS */
+  .eval-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:.85rem; }
+  .eval-card { border-radius:var(--radius); padding:1.3rem 1.4rem; border:1px solid; }
+  .eval-card.formative { background:linear-gradient(135deg,#e3f5f0,#f0fdf8); border-color:rgba(12,110,85,0.2); }
+  .eval-card.summative { background:linear-gradient(135deg,#e0f4fa,#f0fbff); border-color:rgba(8,145,178,0.2); }
+  .eval-type { font-size:10px; letter-spacing:.15em; text-transform:uppercase; font-weight:600; margin-bottom:.5rem; }
+  .eval-card.formative .eval-type { color:var(--green); }
+  .eval-card.summative .eval-type { color:var(--teal); }
+  .eval-card h3 { font-family:'Sora',sans-serif; font-size:15px; font-weight:600; color:var(--ink); margin-bottom:.5rem; }
+  .eval-card p { font-size:13px; color:var(--ink-mid); line-height:1.65; }
+
+  /* METHOD CATEGORY */
+  .method-cat { border-radius:var(--radius); border:1px solid var(--border); margin-bottom:1rem; overflow:hidden; box-shadow:var(--shadow-sm); }
+  .method-cat-header { padding:.85rem 1.25rem; display:flex; align-items:center; gap:12px; }
+  .method-cat-header.testing { background:linear-gradient(90deg,#042f24,#0a5940); }
+  .method-cat-header.inspection { background:linear-gradient(90deg,#083d4f,#0a5265); }
+  .method-cat-header.inquiry { background:linear-gradient(90deg,#2d1a00,#5a3800); }
+  .method-cat-icon { width:36px; height:36px; border-radius:10px; background:rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .method-cat-title { font-family:'Sora',sans-serif; font-size:16px; font-weight:600; color:#fff; }
+  .method-cat-sub { font-size:12px; color:rgba(255,255,255,0.55); }
+  .method-list { background:var(--white); }
+  .method-item { padding:1rem 1.25rem; border-top:1px solid var(--border); display:flex; gap:14px; align-items:flex-start; }
+  .method-num { width:28px; height:28px; border-radius:8px; font-size:12px; font-weight:600; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+  .testing .method-num, .method-num.testing { background:var(--green-pale); color:var(--green); }
+  .method-num.inspection { background:var(--teal-pale); color:var(--teal); }
+  .method-num.inquiry { background:var(--orange-pale); color:var(--orange); }
+  .method-name { font-size:13px; font-weight:600; color:var(--ink); margin-bottom:.25rem; }
+  .method-desc { font-size:13px; color:var(--ink-light); line-height:1.6; }
+
+  /* FACTOR CARDS */
+  .factor-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+  .factor-card { background:var(--white); border:1px solid var(--border); border-radius:12px; padding:1rem 1.1rem; box-shadow:var(--shadow-sm); transition:transform .2s,box-shadow .2s; }
+  .factor-card:hover { transform:translateY(-3px); box-shadow:var(--shadow); }
+  .factor-num { font-family:'Sora',sans-serif; font-size:26px; font-weight:700; color:var(--green-pale); line-height:1; margin-bottom:.4rem; background:linear-gradient(135deg,var(--green),var(--green-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .factor-name { font-size:12px; font-weight:600; color:var(--ink); margin-bottom:.25rem; }
+  .factor-desc { font-size:12px; color:var(--ink-light); line-height:1.55; }
+
+  /* QUOTE */
+  .quote-block { background:linear-gradient(135deg,var(--green-pale),#f0fdf8); border-left:4px solid var(--green); border-radius:0 var(--radius) var(--radius) 0; padding:1.2rem 1.5rem; margin-bottom:.85rem; }
+  .quote-block p { font-family:'Sora',sans-serif; font-size:15px; font-weight:600; color:var(--green); font-style:italic; line-height:1.55; }
+
+  .divider { height:1px; background:var(--border); margin:2rem 0; }
+
+  /* TAG */
+  .tag { display:inline-block; background:var(--green-pale); color:var(--green); font-size:11px; font-weight:500; border-radius:20px; padding:2px 10px; margin-right:5px; border:1px solid rgba(12,110,85,0.2); }
+
+  /* FLASHCARDS */
+  .fc-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+  .fc-count { font-size:13px; color:var(--ink-light); }
+  .fc-label-top { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--green); font-weight:500; }
+  .fc-progress { height:3px; background:#c8ede5; border-radius:3px; overflow:hidden; margin-bottom:1.25rem; }
+  .fc-fill { height:100%; background:linear-gradient(90deg,var(--green),var(--green-light)); border-radius:3px; transition:width .35s ease; }
+  .fc-stage { perspective:1200px; height:230px; cursor:pointer; margin-bottom:1rem; user-select:none; }
+  .fc-inner { position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .5s cubic-bezier(.4,0,.2,1); }
+  .fc-inner.flipped { transform:rotateY(180deg); }
+  .fc-face { position:absolute; inset:0; backface-visibility:hidden; border-radius:var(--radius); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem; text-align:center; border:1px solid var(--border); box-shadow:var(--shadow); }
+  .fc-front { background:var(--white); }
+  .fc-back { background:linear-gradient(135deg,#042f24,#083d4f); transform:rotateY(180deg); }
+  .fc-face-label { font-size:10px; letter-spacing:.15em; text-transform:uppercase; font-weight:600; margin-bottom:.75rem; }
+  .fc-front .fc-face-label { color:var(--ink-light); }
+  .fc-back .fc-face-label { color:#6ee7b7; }
+  .fc-q { font-family:'Sora',sans-serif; font-size:17px; font-weight:600; color:var(--ink); line-height:1.45; }
+  .fc-a { font-size:14px; color:#ccfbf1; line-height:1.7; }
+  .fc-hint { text-align:center; font-size:12px; color:var(--ink-light); margin-bottom:1.25rem; }
+  .fc-nav { display:flex; gap:12px; justify-content:center; }
+
+  /* BUTTONS */
+  .btn { background:var(--white); border:1px solid var(--border-strong); border-radius:8px; padding:9px 22px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:var(--ink); cursor:pointer; transition:background .15s,transform .1s; }
+  .btn:hover { background:var(--green-pale); }
+  .btn:active { transform:scale(.97); }
+  .btn:disabled { opacity:.3; cursor:default; pointer-events:none; }
+  .btn-primary { background:var(--green); border-color:var(--green); color:#fff; }
+  .btn-primary:hover { background:var(--green-light); border-color:var(--green-light); }
+  .btn-ghost { background:none; border:none; color:var(--ink-light); padding:9px 14px; }
+  .btn-ghost:hover { background:var(--green-pale); }
+
+  /* QUIZ */
+  .quiz-prog-bar { height:3px; background:#c8ede5; border-radius:3px; overflow:hidden; margin-bottom:1.75rem; }
+  .quiz-prog-fill { height:100%; background:linear-gradient(90deg,var(--green),var(--green-light)); border-radius:3px; transition:width .4s ease; }
+  .quiz-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+  .q-num { font-size:12px; letter-spacing:.08em; text-transform:uppercase; font-weight:600; color:var(--green); }
+  .score-pill { background:var(--orange-pale); border:1px solid rgba(217,119,6,0.25); border-radius:20px; padding:4px 14px; font-size:12px; font-weight:500; color:#7c4a00; }
+  .q-text { font-family:'Sora',sans-serif; font-size:19px; font-weight:600; color:var(--ink); line-height:1.45; margin-bottom:1.5rem; }
+  .choices { display:flex; flex-direction:column; gap:10px; margin-bottom:1.25rem; }
+  .choice { background:var(--white); border:1px solid var(--border-strong); border-radius:10px; padding:.9rem 1.2rem; font-family:'Inter',sans-serif; font-size:14px; color:var(--ink); cursor:pointer; text-align:left; transition:all .15s; display:flex; align-items:center; gap:12px; }
+  .choice-letter { width:28px; height:28px; border-radius:8px; background:var(--green-pale); border:1px solid var(--border-strong); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:var(--green); flex-shrink:0; transition:background .15s,color .15s; }
+  .choice:hover:not(:disabled) { background:var(--green-pale); border-color:var(--green); }
+  .choice:hover:not(:disabled) .choice-letter { background:var(--green); color:#fff; border-color:var(--green); }
+  .choice.correct { background:#eafbea; border-color:#27ae60; }
+  .choice.correct .choice-letter { background:#27ae60; color:#fff; border-color:#27ae60; }
+  .choice.wrong { background:#fdeaea; border-color:#e74c3c; }
+  .choice.wrong .choice-letter { background:#e74c3c; color:#fff; border-color:#e74c3c; }
+  .explanation { background:var(--teal-pale); border-left:3px solid var(--teal); border-radius:0 10px 10px 0; padding:.85rem 1.1rem; font-size:13.5px; color:var(--ink-mid); line-height:1.7; margin-bottom:1.25rem; display:none; }
+  .explanation.show { display:block; }
+  .q-next { display:none; }
+  .q-next.show { display:inline-flex; align-items:center; gap:8px; }
+
+  /* RESULTS */
+  .results { text-align:center; padding:3rem 1rem; }
+  .results-icon { font-size:56px; margin-bottom:1rem; display:block; }
+  .results h2 { font-family:'Sora',sans-serif; font-size:28px; font-weight:700; color:var(--ink); margin-bottom:.5rem; }
+  .results p { font-size:15px; color:var(--ink-light); margin-bottom:2rem; line-height:1.7; }
+  .score-big { font-family:'Sora',sans-serif; font-size:68px; font-weight:700; background:linear-gradient(135deg,var(--green),var(--green-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; line-height:1; margin-bottom:.25rem; }
+  .score-label { font-size:13px; color:var(--ink-light); margin-bottom:2rem; }
+
+  /* FOOTER */
+  .site-footer { background:#042f24; color:rgba(255,255,255,0.3); text-align:center; padding:1.5rem; font-size:12px; letter-spacing:.04em; }
+
+  @media(max-width:600px){
+    .hero h1{font-size:1.85rem;}
+    .tab-btn{padding:12px 15px;font-size:12px;}
+    .eval-grid{grid-template-columns:1fr;}
+    .factor-grid{grid-template-columns:1fr 1fr;}
+    .fc-q{font-size:15px;}
+    .q-text{font-size:16px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <p class="hero-eyebrow">ITEP 101 · HCI 1 · Module 4</p>
+  <h1>Usability<br><span>Evaluation Techniques</span></h1>
+  <p class="hero-sub">Human Computer Interaction 1 — Study Reviewer</p>
+  <div class="hero-meta">
+    <span class="hero-pill"><strong>3 Methods</strong> Testing · Inspection · Inquiry</span>
+    <span class="hero-pill"><strong>8 Factors</strong> Choosing a Technique</span>
+    <span class="hero-pill"><strong>Formative</strong> vs <strong>Summative</strong></span>
+  </div>
+</header>
+
+<nav class="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('reviewer',this)">
+    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    Reviewer
+  </button>
+  <button class="tab-btn" onclick="switchTab('flashcards',this)">
+    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="16" height="13" rx="2"/><path d="M22 5V17"/><path d="M6 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-2"/></svg>
+    Flashcards
+  </button>
+  <button class="tab-btn" onclick="switchTab('quiz',this)">
+    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Quiz
+  </button>
+</nav>
+
+<!-- ===== REVIEWER ===== -->
+<div id="reviewer" class="panel active">
+  <div class="container">
+
+    <p class="section-label">What is Usability Evaluation?</p>
+    <div class="rcard">
+      <p>Usability evaluation methods contribute to systems development by providing <strong>feedback on usability problems</strong> and <strong>validating the usability</strong> of a system. There are four main reasons for doing evaluation:</p>
+      <ul style="margin-top:.7rem">
+        <li>To <strong>understand the real world</strong> and improve designs to fit the workplace better.</li>
+        <li>To <strong>compare designs</strong> — determine which is best for given situations and users.</li>
+        <li>To <strong>decide if engineering targets have been met</strong> — is the design good enough?</li>
+        <li>To <strong>decide if the design meets standards</strong>.</li>
+      </ul>
+    </div>
+
+    <p class="section-label">Types of Evaluation</p>
+    <div class="eval-grid">
+      <div class="eval-card formative">
+        <div class="eval-type">Formative</div>
+        <h3>During Development</h3>
+        <p>Conducted <strong>during</strong> the development process to identify and fix usability problems early. Uses prototypes, simulations, or early versions. Main goal: refine the system and reduce the risk of expensive rework before the final product is completed.</p>
+      </div>
+      <div class="eval-card summative">
+        <div class="eval-type">Summative</div>
+        <h3>After Development</h3>
+        <p>Conducted at a <strong>later stage or after</strong> development. Measures whether the product meets usability requirements, user satisfaction, and performance standards. Determines if the system is ready for release.</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <p class="section-label">Method 1 — Testing</p>
+    <div class="method-cat">
+      <div class="method-cat-header testing">
+        <div class="method-cat-icon">🧪</div>
+        <div>
+          <div class="method-cat-title">Testing</div>
+          <div class="method-cat-sub">Representative users work on typical tasks; evaluators assess how the UI supports users.</div>
+        </div>
+      </div>
+      <div class="method-list">
+        <div class="method-item">
+          <div class="method-num testing">1.1</div>
+          <div><div class="method-name">Coaching Method</div><div class="method-desc">Participants are allowed to ask any system-related questions of an expert coach who answers to the best of their ability during the usability test.</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num testing">1.2</div>
+          <div><div class="method-name">Co-discovery Learning</div><div class="method-desc">Two test users attempt to perform tasks together while being observed, helping each other as they would in a real collaborative work situation.</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num testing">1.3</div>
+          <div><div class="method-name">Performance Measurement</div><div class="method-desc">Obtains <strong>quantitative data</strong> about participants' performance. Conducted in a formal usability laboratory to collect data accurately and minimize unexpected interference.</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num testing">1.4</div>
+          <div><div class="method-name">Question Asking Protocol</div><div class="method-desc">Also obtains quantitative performance data during usability testing. Should be conducted in a formal usability laboratory for accurate data collection and minimal interference.</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num testing">1.5</div>
+          <div><div class="method-name">Remote Testing</div><div class="method-desc">Used when testers are <strong>separated in space and/or time</strong> from participants. Testers cannot observe the testing process directly; participants are not usually in a formal usability lab.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-label">Method 2 — Inspection</p>
+    <div class="method-cat">
+      <div class="method-cat-header inspection">
+        <div class="method-cat-icon">🔍</div>
+        <div>
+          <div class="method-cat-title">Inspection</div>
+          <div class="method-cat-sub">Usability specialists (and sometimes developers/users) examine usability-related aspects of a UI.</div>
+        </div>
+      </div>
+      <div class="method-list">
+        <div class="method-item">
+          <div class="method-num inspection">2.1</div>
+          <div><div class="method-name">Cognitive Walkthrough</div><div class="method-desc">One or more evaluators inspect a UI by going through a set of tasks and evaluate its <strong>understandability and ease of learning</strong>. Can use paper mockups, prototypes, or fully developed interfaces.</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num inspection">2.2</div>
+          <div><div class="method-name">Feature Inspection</div><div class="method-desc">Focuses on the <strong>feature set</strong> of a product. Inspectors analyze each feature for its availability, understandability, and other usability aspects using given use cases.</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num inspection">2.3</div>
+          <div><div class="method-name">Heuristic Evaluation</div><div class="method-desc">Developed by <strong>Jakob Nielsen and Rolf Molich</strong>. Uses a set of heuristics (guidelines/rules of thumb) to structure the critique of a system. Identifies usability problems against established principles.</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num inspection">2.4</div>
+          <div><div class="method-name">Pluralistic Walkthrough</div><div class="method-desc"><strong>Group walkthrough</strong> that provides a diverse range of skills and perspectives. More people looking for problems = higher probability of finding problems.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="section-label">Method 3 — Inquiry</p>
+    <div class="method-cat">
+      <div class="method-cat-header inquiry">
+        <div class="method-cat-icon">💬</div>
+        <div>
+          <div class="method-cat-title">Inquiry</div>
+          <div class="method-cat-sub">Evaluators gather info about users' likes, dislikes, needs, and understanding by talking to or observing them.</div>
+        </div>
+      </div>
+      <div class="method-list">
+        <div class="method-item">
+          <div class="method-num inquiry">3.1</div>
+          <div><div class="method-name">Field Observation</div><div class="method-desc">Human factors engineers go to a <strong>representative user's workplace</strong> and observe them working, to understand how they use the system and what mental model they have. Used in test and deployment stages.</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num inquiry">3.2</div>
+          <div><div class="method-name">Focus Group</div><div class="method-desc">About <strong>6 to 9 users</strong> are brought together to discuss issues relating to the system. A human factors engineer acts as moderator, preparing discussion topics in advance.</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num inquiry">3.3</div>
+          <div><div class="method-name">Interviews</div><div class="method-desc">Human factors engineers formulate questions and interview representative users. Two types: <strong>Unstructured Interview</strong> (open-ended, flexible) and <strong>Structured Interview</strong> (fixed questions, consistent format).</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num inquiry">3.4</div>
+          <div><div class="method-name">Questionnaires</div><div class="method-desc">Focus on sampling a <strong>statistically representative</strong> smaller population. More manageable, reduces workload and costs, and makes it easier to ensure data homogeneity and quality.</div></div>
+        </div>
+        <div class="method-item">
+          <div class="method-num inquiry">3.5</div>
+          <div><div class="method-name">Logging Actual Users</div><div class="method-desc">The computer <strong>automatically collects statistics</strong> about detailed system use. Useful because it shows how users perform real work and easily collects data from a large number of users under different circumstances.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+    <p class="section-label">8 Factors for Choosing an Evaluation Technique</p>
+    <div class="factor-grid">
+      <div class="factor-card"><div class="factor-num">01</div><div class="factor-name">Stage in the Cycle</div><div class="factor-desc">The stage in the design process at which evaluation is required affects the choice of method.</div></div>
+      <div class="factor-card"><div class="factor-num">02</div><div class="factor-name">Style of Evaluation</div><div class="factor-desc">Both laboratory studies (early stages) and field studies (new implementation) should ideally be included.</div></div>
+      <div class="factor-card"><div class="factor-num">03</div><div class="factor-name">Subjectivity vs. Objectivity</div><div class="factor-desc">Subjective techniques (e.g., cognitive walkthrough) rely on the evaluator's knowledge and expertise.</div></div>
+      <div class="factor-card"><div class="factor-num">04</div><div class="factor-name">Type of Measures</div><div class="factor-desc">Quantitative (numeric, statistically analyzed) vs. qualitative measurement — both serve different purposes.</div></div>
+      <div class="factor-card"><div class="factor-num">05</div><div class="factor-name">Information Provided</div><div class="factor-desc">The level of information needed may range from low-level details to enable a design decision to be made.</div></div>
+      <div class="factor-card"><div class="factor-num">06</div><div class="factor-name">Immediacy of Response</div><div class="factor-desc">Some methods record behavior at the time of interaction (e.g., think aloud), but this can alter how the user works.</div></div>
+      <div class="factor-card"><div class="factor-num">07</div><div class="factor-name">Level of Interference</div><div class="factor-desc">Intrusive techniques that produce immediate measurements risk influencing the user's behavior during the interaction.</div></div>
+      <div class="factor-card"><div class="factor-num">08</div><div class="factor-name">Resources Required</div><div class="factor-desc">Consider equipment, time, money, participants, evaluator expertise, and context. Resource limitations can force certain choices.</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== FLASHCARDS ===== -->
+<div id="flashcards" class="panel">
+  <div class="container">
+    <div class="fc-meta">
+      <span class="fc-count" id="fc-count">Card 1 of 20</span>
+      <span class="fc-label-top">Click card to flip</span>
+    </div>
+    <div class="fc-progress"><div class="fc-fill" id="fc-fill" style="width:5%"></div></div>
+    <div class="fc-stage" onclick="flipCard()">
+      <div class="fc-inner" id="fc-inner">
+        <div class="fc-face fc-front">
+          <div class="fc-face-label">Question</div>
+          <div class="fc-q" id="fc-q"></div>
+        </div>
+        <div class="fc-face fc-back">
+          <div class="fc-face-label">Answer</div>
+          <div class="fc-a" id="fc-a"></div>
+        </div>
+      </div>
+    </div>
+    <p class="fc-hint">Tap the card to reveal the answer &nbsp;·&nbsp; Use Prev / Next to navigate</p>
+    <div class="fc-nav">
+      <button class="btn" id="fc-prev" onclick="fcNav(-1)">← Prev</button>
+      <button class="btn btn-ghost" onclick="shuffleCards()">🔀 Shuffle</button>
+      <button class="btn" id="fc-next" onclick="fcNav(1)">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== QUIZ ===== -->
+<div id="quiz" class="panel">
+  <div class="container">
+    <div id="quiz-body">
+      <div class="quiz-prog-bar"><div class="quiz-prog-fill" id="quiz-fill" style="width:0%"></div></div>
+      <div class="quiz-header">
+        <span class="q-num" id="q-num">Question 1 of 15</span>
+        <span class="score-pill" id="q-score">Score: 0 / 0</span>
+      </div>
+      <div class="q-text" id="q-text"></div>
+      <div class="choices" id="choices"></div>
+      <div class="explanation" id="explanation"></div>
+      <button class="btn btn-primary q-next" id="q-next" onclick="nextQ()">Next question →</button>
+    </div>
+    <div id="quiz-results" class="results" style="display:none">
+      <span class="results-icon" id="result-icon"></span>
+      <div class="score-big" id="result-score"></div>
+      <div class="score-label" id="result-label"></div>
+      <h2 id="result-title"></h2>
+      <p id="result-msg"></p>
+      <button class="btn btn-primary" onclick="restartQuiz()">Try again</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  Usability Evaluation Techniques Reviewer &nbsp;·&nbsp; ITEP 101 Human Computer Interaction 1 &nbsp;·&nbsp; Module 4
+</footer>
+
+<script>
+const flashcards = [
+  {q:"What is Formative Evaluation?", a:"Conducted DURING development to identify and fix usability problems early using prototypes or early versions. Goal: refine the system and reduce the risk of expensive rework."},
+  {q:"What is Summative Evaluation?", a:"Conducted at a later stage or AFTER development. Measures whether the product meets usability requirements, user satisfaction, and performance standards. Determines if the system is ready for release."},
+  {q:"What are the 3 main usability evaluation methods?", a:"1. Testing — users work on tasks with the system\n2. Inspection — specialists examine the UI\n3. Inquiry — gathering info by talking to or observing users"},
+  {q:"What is the Coaching Method in usability testing?", a:"Participants are allowed to ask any system-related questions of an expert coach who answers to the best of their ability during the usability test."},
+  {q:"What is Co-discovery Learning?", a:"Two test users attempt to perform tasks together while being observed, helping each other as they would in a real collaborative work situation."},
+  {q:"What is Performance Measurement in usability testing?", a:"A technique that obtains QUANTITATIVE data about participants' performance. Must be conducted in a formal usability laboratory to ensure accurate data collection and minimize interference."},
+  {q:"What is Remote Testing?", a:"Used when testers are separated in space and/or time from participants. Testers cannot directly observe the process; participants are usually not in a formal usability lab."},
+  {q:"What is Cognitive Walkthrough?", a:"One or more evaluators inspect a UI by going through tasks and evaluating its understandability and ease of learning. Can use paper mockups, prototypes, or fully developed interfaces."},
+  {q:"What is Heuristic Evaluation and who developed it?", a:"A method using heuristics (guidelines/rules of thumb) to critique a system's usability. Developed by Jakob Nielsen and Rolf Molich."},
+  {q:"What is a Pluralistic Walkthrough?", a:"A group walkthrough that provides diverse skills and perspectives. More people = higher probability of finding usability problems."},
+  {q:"What is Field Observation in the Inquiry method?", a:"Human factors engineers go to a representative user's workplace and observe them working to understand how they use the system and their mental model. Used in test and deployment stages."},
+  {q:"How many users are typically in a Focus Group?", a:"About 6 to 9 users. A human factors engineer acts as moderator, preparing discussion topics in advance."},
+  {q:"What are the two types of Interviews in usability inquiry?", a:"1. Unstructured Interview — open-ended and flexible\n2. Structured Interview — fixed questions, consistent format"},
+  {q:"What is Logging Actual Users?", a:"The computer automatically collects statistics about detailed system use. Useful for showing how users perform real work and easily collecting data from a large number of users under different circumstances."},
+  {q:"What is Feature Inspection?", a:"Focuses on the feature set of a product. Inspectors analyze each feature for availability, understandability, and other usability aspects using given use cases."},
+  {q:"What is the first factor in choosing an evaluation technique?", a:"The STAGE in the design cycle at which evaluation is required — early stages vs. later stages call for different methods."},
+  {q:"What does 'immediacy of response' mean as a distinguishing factor?", a:"Some methods (like think aloud) record user behavior at the time of interaction itself. However, immediate techniques can alter the way the user works."},
+  {q:"What does 'level of interference' mean as a distinguishing factor?", a:"The intrusiveness of the technique — methods that produce immediate measurements are obvious to the user and risk influencing how they behave."},
+  {q:"What are the two types of measurement in usability evaluation?", a:"Quantitative measurement (numeric, analyzed statistically) and Qualitative measurement — both serve different evaluation purposes."},
+  {q:"What resources must be considered when choosing an evaluation technique?", a:"Equipment, time, money, participants, evaluator expertise, and context. Resource limitations can force certain method choices."}
+];
+
+const questions = [
+  {q:"Which type of evaluation is conducted DURING development to catch problems early?",choices:["Summative Evaluation","Heuristic Evaluation","Formative Evaluation","Field Observation"],ans:2,exp:"Formative Evaluation is conducted during the development process to identify and fix usability problems early using prototypes or early versions — before the final product is completed."},
+  {q:"Which type of evaluation determines if the system is READY FOR RELEASE?",choices:["Formative Evaluation","Summative Evaluation","Cognitive Walkthrough","Remote Testing"],ans:1,exp:"Summative Evaluation is conducted at a later stage or after development to measure whether the product meets usability requirements, user satisfaction, and performance standards."},
+  {q:"In the Coaching Method, what are participants allowed to do?",choices:["Work alone without any help","Observe other users completing tasks","Ask any system-related questions to an expert coach","Test the system remotely"],ans:2,exp:"In the Coaching Method, participants can ask any system-related questions of an expert coach who answers to the best of their ability — providing guidance during the usability test."},
+  {q:"Which testing method involves TWO users working on tasks together while being observed?",choices:["Performance Measurement","Remote Testing","Question Asking Protocol","Co-discovery Learning"],ans:3,exp:"Co-discovery Learning has two test users attempt to perform tasks together while being observed, helping each other as they would in a real collaborative work situation."},
+  {q:"Which testing method is used when testers and participants are separated by space or time?",choices:["Coaching Method","Co-discovery Learning","Remote Testing","Performance Measurement"],ans:2,exp:"Remote Testing is used when testers are separated in space and/or time from participants. Testers cannot directly observe the process, and participants are not usually in a formal usability lab."},
+  {q:"Who developed Heuristic Evaluation?",choices:["Donald Norman and Steve Jobs","Jakob Nielsen and Rolf Molich","Bill Gates and Tim Berners-Lee","ISO and IEEE"],ans:1,exp:"Heuristic Evaluation was developed by Jakob Nielsen and Rolf Molich. It uses heuristics (guidelines/rules of thumb) to structure the critique of a system's usability."},
+  {q:"What is a Cognitive Walkthrough used to evaluate?",choices:["The aesthetic appeal of the interface","The understandability and ease of learning of a UI","The number of bugs in the system","The system's performance speed"],ans:1,exp:"Cognitive Walkthrough involves evaluators inspecting a UI by going through tasks to evaluate its understandability and ease of learning. It can use paper mockups, prototypes, or fully developed interfaces."},
+  {q:"How many users are typically brought together in a Focus Group?",choices:["2 to 3 users","4 to 5 users","6 to 9 users","10 to 15 users"],ans:2,exp:"A Focus Group typically involves about 6 to 9 users brought together to discuss issues relating to the system, with a human factors engineer acting as moderator."},
+  {q:"Which Inquiry method involves automatically collecting statistics about system use?",choices:["Field Observation","Focus Group","Questionnaires","Logging Actual Users"],ans:3,exp:"Logging Actual Users has the computer automatically collect statistics about detailed system use. It shows how users perform real work and easily collects data from a large number of users."},
+  {q:"Which Inspection method involves a GROUP of people examining usability problems together?",choices:["Feature Inspection","Cognitive Walkthrough","Pluralistic Walkthrough","Heuristic Evaluation"],ans:2,exp:"Pluralistic Walkthrough is a group walkthrough providing diverse skills and perspectives. The more people looking for problems, the higher the probability of finding them."},
+  {q:"What does Performance Measurement in usability testing produce?",choices:["Qualitative user opinions","Quantitative data about participants' performance","A list of design recommendations","A comparison of two products"],ans:1,exp:"Performance Measurement obtains QUANTITATIVE data about test participants' performance. It must be conducted in a formal usability laboratory to collect data accurately and minimize interference."},
+  {q:"Which factor for choosing an evaluation technique refers to how INTRUSIVE the method is?",choices:["Resources Required","Type of Measures Provided","Level of Interference","Immediacy of Response"],ans:2,exp:"Level of Interference refers to the intrusiveness of the technique. Methods that produce immediate measurements are obvious to the user during interaction and risk influencing how they behave."},
+  {q:"What are the two types of measurement provided by evaluation techniques?",choices:["Formal and Informal","Quantitative and Qualitative","Objective and Subjective","Direct and Indirect"],ans:1,exp:"The two main types of measurement are Quantitative (numeric data, analyzable with statistics) and Qualitative. The type of measurement needed is an important factor when choosing an evaluation technique."},
+  {q:"Which Inquiry method involves a human factors engineer going to a USER'S WORKPLACE to observe them?",choices:["Focus Group","Interviews","Field Observation","Questionnaires"],ans:2,exp:"Field Observation has human factors engineers go to a representative user's workplace to observe them working — understanding how they use the system and their mental model of it."},
+  {q:"Which of the following is NOT one of the 3 main usability evaluation methods?",choices:["Testing","Inspection","Benchmarking","Inquiry"],ans:2,exp:"The 3 main usability evaluation methods are Testing, Inspection, and Inquiry. Benchmarking is not one of the three main categories covered in this module."}
+];
+
+let fcIdx=0, fcFlipped=false, fcOrder=[...Array(flashcards.length).keys()];
+let qIdx=0, score=0, answered=false;
+
+function switchTab(t,el){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(t).classList.add('active');
+  if(t==='flashcards') renderFC();
+  if(t==='quiz'){
+    qIdx=0; score=0; answered=false;
+    document.getElementById('quiz-body').style.display='block';
+    document.getElementById('quiz-results').style.display='none';
+    renderQ();
+  }
+}
+
+function renderFC(){
+  fcFlipped=false;
+  document.getElementById('fc-inner').classList.remove('flipped');
+  const card=flashcards[fcOrder[fcIdx]];
+  document.getElementById('fc-q').textContent=card.q;
+  document.getElementById('fc-a').textContent=card.a;
+  document.getElementById('fc-count').textContent=`Card ${fcIdx+1} of ${flashcards.length}`;
+  document.getElementById('fc-fill').style.width=((fcIdx+1)/flashcards.length*100)+'%';
+  document.getElementById('fc-prev').disabled=fcIdx===0;
+  document.getElementById('fc-next').disabled=fcIdx===flashcards.length-1;
+}
+
+function flipCard(){
+  fcFlipped=!fcFlipped;
+  document.getElementById('fc-inner').classList.toggle('flipped',fcFlipped);
+}
+
+function fcNav(d){
+  fcIdx=Math.max(0,Math.min(flashcards.length-1,fcIdx+d));
+  renderFC();
+}
+
+function shuffleCards(){
+  for(let i=fcOrder.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [fcOrder[i],fcOrder[j]]=[fcOrder[j],fcOrder[i]];
+  }
+  fcIdx=0; renderFC();
+}
+
+function renderQ(){
+  if(qIdx>=questions.length){showResults();return;}
+  answered=false;
+  const q=questions[qIdx];
+  document.getElementById('q-num').textContent=`Question ${qIdx+1} of ${questions.length}`;
+  document.getElementById('q-score').textContent=`Score: ${score} / ${qIdx}`;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('explanation').className='explanation';
+  document.getElementById('q-next').className='btn btn-primary q-next';
+  document.getElementById('quiz-fill').style.width=(qIdx/questions.length*100)+'%';
+  const ch=document.getElementById('choices');
+  ch.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    const b=document.createElement('button');
+    b.className='choice';
+    b.innerHTML=`<span class="choice-letter">${l}</span>${q.choices[i]}`;
+    b.onclick=()=>selectChoice(i,b);
+    ch.appendChild(b);
+  });
+}
+
+function selectChoice(i,btn){
+  if(answered)return;
+  answered=true;
+  const q=questions[qIdx];
+  document.querySelectorAll('.choice').forEach(b=>b.disabled=true);
+  if(i===q.ans){btn.classList.add('correct');score++;}
+  else{btn.classList.add('wrong');document.querySelectorAll('.choice')[q.ans].classList.add('correct');}
+  document.getElementById('q-score').textContent=`Score: ${score} / ${qIdx+1}`;
+  const exp=document.getElementById('explanation');
+  exp.textContent='💡 '+q.exp;
+  exp.className='explanation show';
+  document.getElementById('q-next').className='btn btn-primary q-next show';
+}
+
+function nextQ(){qIdx++;renderQ();}
+
+function showResults(){
+  document.getElementById('quiz-body').style.display='none';
+  document.getElementById('quiz-results').style.display='block';
+  document.getElementById('quiz-fill').style.width='100%';
+  const pct=Math.round(score/questions.length*100);
+  document.getElementById('result-score').textContent=`${score}/${questions.length}`;
+  document.getElementById('result-label').textContent=`${pct}% correct`;
+  let icon,title,msg;
+  if(pct>=90){icon='🏆';title='Excellent!';msg='Outstanding! You have a strong command of Usability Evaluation Techniques!';}
+  else if(pct>=70){icon='👍';title='Good job!';msg=`You scored ${score} out of ${questions.length}. Review the methods you missed and try again!`;}
+  else{icon='📖';title='Keep studying!';msg=`You scored ${score} out of ${questions.length}. Head back to the Reviewer and Flashcards to strengthen your understanding.`;}
+  document.getElementById('result-icon').textContent=icon;
+  document.getElementById('result-title').textContent=title;
+  document.getElementById('result-msg').textContent=msg;
+}
+
+function restartQuiz(){
+  qIdx=0; score=0; answered=false;
+  document.getElementById('quiz-body').style.display='block';
+  document.getElementById('quiz-results').style.display='none';
+  renderQ();
+}
+
+renderFC(); renderQ();
+</script>
+</body>
+</html>
